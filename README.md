@@ -1,6 +1,6 @@
 # tokenizer-mcp
 
-`tokenizer-mcp` is a small MCP server that lets an LLM harness like Claude Code count the exact tokens in any text — a string or a whole file — without dropping into a shell, installing a tokenizer, or writing a throwaway script. You hand it the text and a model name; it routes to the right backend: Anthropic's `messages.count_tokens` for Claude, `tiktoken` for OpenAI, HuggingFace `transformers` for Qwen, and CLIP-L / CLIP-bigG for SDXL. "How many tokens is this?" becomes a single tool call.
+`tokenizer-mcp` is a small MCP server that lets an LLM harness like Claude Code count the exact tokens in files (or any string) trivially easily. The server receives the file/text and a model name; it returns a single integer, the number of tokens calculated via the appropriate backend.
 
 ## Installation
 
@@ -63,7 +63,6 @@ The `model` argument is normalized — lowercased, with spaces and underscores t
 | Everything else                                         | Anthropic `messages.count_tokens`                  |
 
 Qwen shorthands (`qwen`, `qwen1`, `qwen1.5`, `qwen2`, `qwen2.5`) resolve to the smallest repo in each generation (e.g. `Qwen/Qwen2.5-0.5B`) so the first download is quick. Models within a generation share a tokenizer, so the count is identical whichever you pick.
-
 
 ## Wiring it into an MCP client
 

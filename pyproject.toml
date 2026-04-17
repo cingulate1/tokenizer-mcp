@@ -1,6 +1,6 @@
 [project]
 name = "tokenizer-mcp"
-version = "1.0.0"
+version = "1.0.1"
 description = "MCP server that counts tokens for Anthropic, OpenAI, Qwen, and SDXL models."
 readme = "README.md"
 requires-python = ">=3.12"
