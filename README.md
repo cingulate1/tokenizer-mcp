@@ -3,9 +3,17 @@
 `tokenizer-mcp` is a small MCP server that lets an LLM harness like Claude Code count the exact tokens in any text — a string or a whole file — without dropping into a shell, installing a tokenizer, or writing a throwaway script. You hand it the text and a model name; it routes to the right backend: Anthropic's `messages.count_tokens` for Claude, `tiktoken` for OpenAI, HuggingFace `transformers` for Qwen, and CLIP-L / CLIP-bigG for SDXL. "How many tokens is this?" becomes a single tool call.
 
 ## Installation
-bash uv sync
+
+```bash
+uv sync
+```
+
 ## Running it directly
-bash uv run server.py
+
+```bash
+uv run server.py
+```
+
 At startup the server warms every tokenizer in a background thread, so the first real tool call pays no load cost.
 
 ## API key setup
@@ -13,11 +21,24 @@ At startup the server warms every tokenizer in a background thread, so the first
 Counting tokens for Claude requires an Anthropic API key, since the exact count comes from `messages.count_tokens`. Without a key, the Claude path silently falls back to tiktoken's `o200k_base` encoding. OpenAI, Qwen, and SDXL counts work offline and need no key.
 
 Set the key as an environment variable:
-bash export ANTHROPIC_API_KEY=sk-ant-...
+
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...
+```
+
 On Windows (PowerShell):
-powershell $env:ANTHROPIC_API_KEY = "sk-ant-..."
+
+```powershell
+$env:ANTHROPIC_API_KEY = "sk-ant-..."
+```
+
 Or drop a `.env` file next to `server.py` and the server will load it on startup:
-ANTHROPIC_API_KEY=sk-ant-... ANTHROPIC_TOKEN_COUNT_MODEL=claude-3-haiku-20240307
+
+```
+ANTHROPIC_API_KEY=sk-ant-...
+ANTHROPIC_TOKEN_COUNT_MODEL=claude-3-haiku-20240307
+```
+
 `ANTHROPIC_TOKEN_COUNT_MODEL` sets the default Claude model when the caller omits one; it defaults to `claude-3-haiku-20240307`.
 
 ## What it exposes
@@ -47,5 +68,19 @@ Qwen shorthands (`qwen`, `qwen1`, `qwen1.5`, `qwen2`, `qwen2.5`) resolve to the 
 ## Wiring it into an MCP client
 
 Add an `mcpServers` entry pointing at this directory:
-json { "mcpServers": { "tokenizer": { "command": "uv", "args": ["--directory", "/absolute/path/to/tokenizer-mcp", "run", "server.py"], "env": { "ANTHROPIC_API_KEY": "sk-ant-..." } } } }
+
+```json
+{
+  "mcpServers": {
+    "tokenizer": {
+      "command": "uv",
+      "args": ["--directory", "/absolute/path/to/tokenizer-mcp", "run", "server.py"],
+      "env": {
+        "ANTHROPIC_API_KEY": "sk-ant-..."
+      }
+    }
+  }
+}
+```
+
 The `env` block is optional; omit it and Claude counts fall back to `o200k_base`, as above.
